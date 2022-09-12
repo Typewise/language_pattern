@@ -10,6 +10,7 @@ from builtins import object, range
 
 import os
 import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import unittest
 import subprocess
@@ -23,7 +24,8 @@ try:
 except:
     PATH = ""
 
-#---------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------------------
 
 
 class TestInflection(unittest.TestCase):
@@ -34,22 +36,22 @@ class TestInflection(unittest.TestCase):
     def test_article(self):
         # Assert definite and indefinite article inflection.
         for a, n, g in (
-          ("il" , "giorno"      , it.M),
-          ("l'" , "altro giorno", it.M),
-          ("lo" , "zio"         , it.M),
-          ("l'" , "amica"       , it.F),
-          ("la" , "nouva amica" , it.F),
-          ("i"  , "giapponesi"  , it.M + it.PL),
-          ("gli", "italiani"    , it.M + it.PL),
-          ("gli", "zii"         , it.M + it.PL),
-          ("le" , "zie"         , it.F + it.PL)):
+                ("il", "giorno", it.M),
+                ("l'", "altro giorno", it.M),
+                ("lo", "zio", it.M),
+                ("l'", "amica", it.F),
+                ("la", "nouva amica", it.F),
+                ("i", "giapponesi", it.M + it.PL),
+                ("gli", "italiani", it.M + it.PL),
+                ("gli", "zii", it.M + it.PL),
+                ("le", "zie", it.F + it.PL)):
             v = it.article(n, "definite", gender=g)
             self.assertEqual(a, v)
         for a, n, g in (
-          ("uno", "zio"  , it.M),
-          ("una", "zia"  , it.F),
-          ("un" , "amico", it.M),
-          ("un'", "amica", it.F)):
+                ("uno", "zio", it.M),
+                ("una", "zia", it.F),
+                ("un", "amico", it.M),
+                ("un'", "amica", it.F)):
             v = it.article(n, "indefinite", gender=g)
             self.assertEqual(a, v)
         v = it.referenced("amica", gender="f")
@@ -134,56 +136,56 @@ class TestInflection(unittest.TestCase):
     def test_conjugate(self):
         # Assert different tenses with different conjugations.
         for (v1, v2, tense) in (
-          ("essere", "essere",     it.INFINITIVE),
-          ("essere", "sono",      (it.PRESENT, 1, it.SINGULAR)),
-          ("essere", "sei",       (it.PRESENT, 2, it.SINGULAR)),
-          ("essere", "è",         (it.PRESENT, 3, it.SINGULAR)),
-          ("essere", "siamo",     (it.PRESENT, 1, it.PLURAL)),
-          ("essere", "siete",     (it.PRESENT, 2, it.PLURAL)),
-          ("essere", "sono",      (it.PRESENT, 3, it.PLURAL)),
-          ("essere", "essendo",   (it.PRESENT + it.PARTICIPLE)),
-          ("essere", "stato",     (it.PAST + it.PARTICIPLE)),
-          ("essere", "ero",       (it.IMPERFECT, 1, it.SINGULAR)),
-          ("essere", "eri",       (it.IMPERFECT, 2, it.SINGULAR)),
-          ("essere", "era",       (it.IMPERFECT, 3, it.SINGULAR)),
-          ("essere", "eravamo",   (it.IMPERFECT, 1, it.PLURAL)),
-          ("essere", "eravate",   (it.IMPERFECT, 2, it.PLURAL)),
-          ("essere", "erano",     (it.IMPERFECT, 3, it.PLURAL)),
-          ("essere", "fui",       (it.PRETERITE, 1, it.SINGULAR)),
-          ("essere", "fosti",     (it.PRETERITE, 2, it.SINGULAR)),
-          ("essere", "fu",        (it.PRETERITE, 3, it.SINGULAR)),
-          ("essere", "fummo",     (it.PRETERITE, 1, it.PLURAL)),
-          ("essere", "foste",     (it.PRETERITE, 2, it.PLURAL)),
-          ("essere", "furono",    (it.PRETERITE, 3, it.PLURAL)),
-          ("essere", "sarei",     (it.CONDITIONAL, 1, it.SINGULAR)),
-          ("essere", "saresti",   (it.CONDITIONAL, 2, it.SINGULAR)),
-          ("essere", "sarebbe",   (it.CONDITIONAL, 3, it.SINGULAR)),
-          ("essere", "saremmo",   (it.CONDITIONAL, 1, it.PLURAL)),
-          ("essere", "sareste",   (it.CONDITIONAL, 2, it.PLURAL)),
-          ("essere", "sarebbero", (it.CONDITIONAL, 3, it.PLURAL)),
-          ("essere", "sarò",      (it.FUTURE, 1, it.SINGULAR)),
-          ("essere", "sarai",     (it.FUTURE, 2, it.SINGULAR)),
-          ("essere", "sarà",      (it.FUTURE, 3, it.SINGULAR)),
-          ("essere", "saremo",    (it.FUTURE, 1, it.PLURAL)),
-          ("essere", "sarete",    (it.FUTURE, 2, it.PLURAL)),
-          ("essere", "saranno",   (it.FUTURE, 3, it.PLURAL)),
-          ("essere", "sii",       (it.PRESENT, 2, it.SINGULAR, it.IMPERATIVE)),
-          ("essere", "sia",       (it.PRESENT, 3, it.SINGULAR, it.IMPERATIVE)),
-          ("essere", "siamo",     (it.PRESENT, 1, it.PLURAL, it.IMPERATIVE)),
-          ("essere", "siate",     (it.PRESENT, 2, it.PLURAL, it.IMPERATIVE)),
-          ("essere", "siano",     (it.PRESENT, 3, it.PLURAL, it.IMPERATIVE)),
-          ("essere", "sia",       (it.PRESENT, 1, it.SINGULAR, it.SUBJUNCTIVE)),
-          ("essere", "sia",       (it.PRESENT, 2, it.SINGULAR, it.SUBJUNCTIVE)),
-          ("essere", "sia",       (it.PRESENT, 3, it.SINGULAR, it.SUBJUNCTIVE)),
-          ("essere", "siamo",     (it.PRESENT, 1, it.PLURAL, it.SUBJUNCTIVE)),
-          ("essere", "siate",     (it.PRESENT, 2, it.PLURAL, it.SUBJUNCTIVE)),
-          ("essere", "siano",     (it.PRESENT, 3, it.PLURAL, it.SUBJUNCTIVE)),
-          ("essere", "fossi",     (it.PAST, 1, it.SINGULAR, it.SUBJUNCTIVE)),
-          ("essere", "fossi",     (it.PAST, 2, it.SINGULAR, it.SUBJUNCTIVE)),
-          ("essere", "fosse",     (it.PAST, 3, it.SINGULAR, it.SUBJUNCTIVE)),
-          ("essere", "fossimo",   (it.PAST, 1, it.PLURAL, it.SUBJUNCTIVE)),
-          ("essere", "foste",     (it.PAST, 2, it.PLURAL, it.SUBJUNCTIVE)),
-          ("essere", "fossero",   (it.PAST, 3, it.PLURAL, it.SUBJUNCTIVE))):
+                ("essere", "essere", it.INFINITIVE),
+                ("essere", "sono", (it.PRESENT, 1, it.SINGULAR)),
+                ("essere", "sei", (it.PRESENT, 2, it.SINGULAR)),
+                ("essere", "è", (it.PRESENT, 3, it.SINGULAR)),
+                ("essere", "siamo", (it.PRESENT, 1, it.PLURAL)),
+                ("essere", "siete", (it.PRESENT, 2, it.PLURAL)),
+                ("essere", "sono", (it.PRESENT, 3, it.PLURAL)),
+                ("essere", "essendo", (it.PRESENT + it.PARTICIPLE)),
+                ("essere", "stato", (it.PAST + it.PARTICIPLE)),
+                ("essere", "ero", (it.IMPERFECT, 1, it.SINGULAR)),
+                ("essere", "eri", (it.IMPERFECT, 2, it.SINGULAR)),
+                ("essere", "era", (it.IMPERFECT, 3, it.SINGULAR)),
+                ("essere", "eravamo", (it.IMPERFECT, 1, it.PLURAL)),
+                ("essere", "eravate", (it.IMPERFECT, 2, it.PLURAL)),
+                ("essere", "erano", (it.IMPERFECT, 3, it.PLURAL)),
+                ("essere", "fui", (it.PRETERITE, 1, it.SINGULAR)),
+                ("essere", "fosti", (it.PRETERITE, 2, it.SINGULAR)),
+                ("essere", "fu", (it.PRETERITE, 3, it.SINGULAR)),
+                ("essere", "fummo", (it.PRETERITE, 1, it.PLURAL)),
+                ("essere", "foste", (it.PRETERITE, 2, it.PLURAL)),
+                ("essere", "furono", (it.PRETERITE, 3, it.PLURAL)),
+                ("essere", "sarei", (it.CONDITIONAL, 1, it.SINGULAR)),
+                ("essere", "saresti", (it.CONDITIONAL, 2, it.SINGULAR)),
+                ("essere", "sarebbe", (it.CONDITIONAL, 3, it.SINGULAR)),
+                ("essere", "saremmo", (it.CONDITIONAL, 1, it.PLURAL)),
+                ("essere", "sareste", (it.CONDITIONAL, 2, it.PLURAL)),
+                ("essere", "sarebbero", (it.CONDITIONAL, 3, it.PLURAL)),
+                ("essere", "sarò", (it.FUTURE, 1, it.SINGULAR)),
+                ("essere", "sarai", (it.FUTURE, 2, it.SINGULAR)),
+                ("essere", "sarà", (it.FUTURE, 3, it.SINGULAR)),
+                ("essere", "saremo", (it.FUTURE, 1, it.PLURAL)),
+                ("essere", "sarete", (it.FUTURE, 2, it.PLURAL)),
+                ("essere", "saranno", (it.FUTURE, 3, it.PLURAL)),
+                ("essere", "sii", (it.PRESENT, 2, it.SINGULAR, it.IMPERATIVE)),
+                ("essere", "sia", (it.PRESENT, 3, it.SINGULAR, it.IMPERATIVE)),
+                ("essere", "siamo", (it.PRESENT, 1, it.PLURAL, it.IMPERATIVE)),
+                ("essere", "siate", (it.PRESENT, 2, it.PLURAL, it.IMPERATIVE)),
+                ("essere", "siano", (it.PRESENT, 3, it.PLURAL, it.IMPERATIVE)),
+                ("essere", "sia", (it.PRESENT, 1, it.SINGULAR, it.SUBJUNCTIVE)),
+                ("essere", "sia", (it.PRESENT, 2, it.SINGULAR, it.SUBJUNCTIVE)),
+                ("essere", "sia", (it.PRESENT, 3, it.SINGULAR, it.SUBJUNCTIVE)),
+                ("essere", "siamo", (it.PRESENT, 1, it.PLURAL, it.SUBJUNCTIVE)),
+                ("essere", "siate", (it.PRESENT, 2, it.PLURAL, it.SUBJUNCTIVE)),
+                ("essere", "siano", (it.PRESENT, 3, it.PLURAL, it.SUBJUNCTIVE)),
+                ("essere", "fossi", (it.PAST, 1, it.SINGULAR, it.SUBJUNCTIVE)),
+                ("essere", "fossi", (it.PAST, 2, it.SINGULAR, it.SUBJUNCTIVE)),
+                ("essere", "fosse", (it.PAST, 3, it.SINGULAR, it.SUBJUNCTIVE)),
+                ("essere", "fossimo", (it.PAST, 1, it.PLURAL, it.SUBJUNCTIVE)),
+                ("essere", "foste", (it.PAST, 2, it.PLURAL, it.SUBJUNCTIVE)),
+                ("essere", "fossero", (it.PAST, 3, it.PLURAL, it.SUBJUNCTIVE))):
             self.assertEqual(it.conjugate(v1, tense), v2)
         print("pattern.it.conjugate()")
 
@@ -207,7 +209,16 @@ class TestInflection(unittest.TestCase):
         self.assertTrue("2sg" in it.tenses("sei"))
         print("pattern.it.tenses()")
 
-#---------------------------------------------------------------------------------------------------
+    def test_lexeme_transformation(self):
+        all_possible_inflections = it.inflect.verbs.lexeme_transformation("mangiai")
+        self.assertEqual(all_possible_inflections.get("1sg", None), "mangio")
+        self.assertEqual(all_possible_inflections.get("inf", None), "mangiare")
+
+    def test_apply_transformation(self):
+        self.assertEqual(it.inflect.verbs.apply_transformation("mangiai", "1sg"), "mangio")
+
+
+# ---------------------------------------------------------------------------------------------------
 
 
 class TestParser(unittest.TestCase):
@@ -234,10 +245,10 @@ class TestParser(unittest.TestCase):
         # "il gatto nero" is a noun phrase, "sulla stuoia" is a prepositional noun phrase.
         v = it.parser.parse("Il gatto nero seduto sulla stuoia.")
         self.assertEqual(v,
-            "Il/DT/B-NP/O gatto/NN/I-NP/O nero/JJ/I-NP/O " +
-            "seduto/VB/B-VP/O " + \
-            "sulla/IN/B-PP/B-PNP stuoia/NN/B-NP/I-PNP ././O/O"
-        )
+                         "Il/DT/B-NP/O gatto/NN/I-NP/O nero/JJ/I-NP/O " +
+                         "seduto/VB/B-VP/O " + \
+                         "sulla/IN/B-PP/B-PNP stuoia/NN/B-NP/I-PNP ././O/O"
+                         )
         # Assert the accuracy of the Italian tagger.
         i, n = 0, 0
         for sentence in open(os.path.join(PATH, "corpora", "tagged-it-wacky.txt")).readlines():
@@ -255,7 +266,7 @@ class TestParser(unittest.TestCase):
                 if t1 == t2 or (t1 == "NN" and t2.startswith("NN")) or s1[j][0] in "\":;)-":
                     i += 1
                 n += 1
-        #print(float(i) / n)
+        # print(float(i) / n)
         self.assertTrue(float(i) / n > 0.92)
         print("pattern.it.parser.parse()")
 
@@ -275,7 +286,8 @@ class TestParser(unittest.TestCase):
         self.assertEqual(v, "Il/DT/B-NP/O/O/il gatto/NN/I-NP/O/O/gatto nero/JJ/I-NP/O/O/nero ././O/O/O/.")
         print("python -m pattern.it")
 
-#---------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------------------
 
 
 def suite():
@@ -284,7 +296,7 @@ def suite():
     suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestParser))
     return suite
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=1).run(suite())
     sys.exit(not result.wasSuccessful())

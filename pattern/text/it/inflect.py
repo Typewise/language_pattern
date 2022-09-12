@@ -157,6 +157,7 @@ plural_irregular = {
     "braccio": "braccia", # bracci (arms of a lamp or cross)
     "budello": "budelli", # budella (intestines)
     "camicia": "camicie",
+    "codice": "codici",
         "bue": "buoi",
         "dio": "dei",
        "dito": "dita",

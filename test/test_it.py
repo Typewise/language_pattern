@@ -216,6 +216,7 @@ class TestInflection(unittest.TestCase):
 
     def test_apply_transformation(self):
         self.assertEqual(it.inflect.verbs.apply_transformation("mangiai", "1sg"), "mangio")
+        self.assertEqual(it.inflect.verbs.apply_transformation("mangiai", "2sgp"), "mangiavi")
 
 
 # ---------------------------------------------------------------------------------------------------

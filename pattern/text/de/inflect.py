@@ -72,6 +72,9 @@ MASCULINE, FEMININE, NEUTER, PLURAL = \
 NOMINATIVE, ACCUSATIVE, DATIVE, GENITIVE = SUBJECT, OBJECT, INDIRECT, PROPERTY = \
     "nominative", "accusative", "dative", "genitive"
 
+CASES = ["nominative", "accusative", "dative", "genitive"]
+GENDER = ["m", "f", "n", "p"]
+
 article_definite = {
     ("m", "nom"): "der", ("f", "nom"): "die", ("n", "nom"): "das", ("p", "nom"): "die",
     ("m", "acc"): "den", ("f", "acc"): "die", ("n", "acc"): "das", ("p", "acc"): "die",
@@ -85,6 +88,10 @@ article_indefinite = {
     ("m", "dat"): "einem", ("f", "dat"): "einer", ("n", "dat"): "einem", ("p", "dat"): "einen",
     ("m", "gen"): "eines", ("f", "gen"): "einer", ("n", "gen"): "eines", ("p", "gen"): "einer",
 }
+
+DEFINITE_ARTICLES = set(article_definite.values())
+INDEFINITE_ARTICLES = set(article_indefinite.values())
+ARTICLES = DEFINITE_ARTICLES.union(INDEFINITE_ARTICLES)
 
 
 def definite_article(word, gender=MALE, role=SUBJECT):

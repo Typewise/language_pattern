@@ -62,7 +62,8 @@ is_vowel = lambda ch: ch in VOWELS
 # Inflection gender.
 MASCULINE, FEMININE, NEUTER, PLURAL = \
     MALE, FEMALE, NEUTRAL, PLURAL = \
-        M, F, N, PL = "m", "f", "n", "p"
+    M, F, N, PL = "m", "f", "n", "p"
+GENDER = ["m", "f", "n", "p"]
 
 # Word starts with z or s + consonant?
 zs = lambda w: w and (w[:1] == "z" or (w[:1] == "s" and not is_vowel(w[1:2])))
@@ -70,6 +71,7 @@ zs = lambda w: w and (w[:1] == "z" or (w[:1] == "s" and not is_vowel(w[1:2])))
 DEFINITE_ARTICLES = ["il", "lo", "la", "i", "gli", "le"]
 INDEFINITE_ARTICLES = ["uno", "un", "una", "un'"]
 ARTICLES = DEFINITE_ARTICLES + INDEFINITE_ARTICLES
+
 
 def definite_article(word, gender=MALE):
     """ Returns the definite article for a given word.
@@ -100,6 +102,7 @@ def indefinite_article(word, gender=MALE):
         return PLURAL in gender and "delle" or "una"
     return "un"
 
+
 DEFINITE, INDEFINITE = \
     "definite", "indefinite"
 
@@ -108,8 +111,9 @@ def article(word, function=INDEFINITE, gender=MALE):
     """ Returns the indefinite or definite article for the given word.
     """
     return function == DEFINITE \
-       and definite_article(word, gender) \
-        or indefinite_article(word, gender)
+           and definite_article(word, gender) \
+           or indefinite_article(word, gender)
+
 
 _article = article
 
@@ -121,6 +125,7 @@ def referenced(word, article=INDEFINITE, gender=MALE):
     s = s.replace("'&space;", "'")
     s = s.replace("&space;", " ")
     return s
+
 
 #### GENDER #########################################################################################
 
@@ -146,32 +151,33 @@ def gender(word):
         return MALE
     return MALE
 
+
 #### PLURALIZE ######################################################################################
 
 plural_co_chi = set((
-    "abbaco", "baco", "cuoco", "fungo", "rammarico", "strascio", "valico" # ...
+    "abbaco", "baco", "cuoco", "fungo", "rammarico", "strascio", "valico"  # ...
 ))
 
 plural_go_ghi = set((
-    "albergo", "catalogo", "chirurgo", "dialogo", "manico", "monologo", "stomaco" # ...
+    "albergo", "catalogo", "chirurgo", "dialogo", "manico", "monologo", "stomaco"  # ...
 ))
 
 plural_irregular = {
-    "braccio": "braccia", # bracci (arms of a lamp or cross)
-    "budello": "budelli", # budella (intestines)
+    "braccio": "braccia",  # bracci (arms of a lamp or cross)
+    "budello": "budelli",  # budella (intestines)
     "camicia": "camicie",
     "codice": "codici",
-        "bue": "buoi",
-        "dio": "dei",
-       "dito": "dita",
-     "doccia": "docce",
-     "inizio": "inizi",
-     "labbro": "labbra", # labbri (borders)
-       "mano": "mani",
+    "bue": "buoi",
+    "dio": "dei",
+    "dito": "dita",
+    "doccia": "docce",
+    "inizio": "inizi",
+    "labbro": "labbra",  # labbri (borders)
+    "mano": "mani",
     "negozio": "negozi",
-       "osso": "ossa", # ossi (dog bones)
-       "uomo": "uomini",
-       "uovo": "uova"
+    "osso": "ossa",  # ossi (dog bones)
+    "uomo": "uomini",
+    "uovo": "uova"
 }
 
 
@@ -211,17 +217,18 @@ def pluralize(word, pos=NOUN, custom={}):
         return w[:-1] + "i"
     return w
 
+
 #### SINGULARIZE ###################################################################################
 
 singular_majority_vote = [
-    ("tenti", "tente"), ("anti", "ante"), ( "oni", "one" ), ( "nti", "nto" ),
-    (  "ali", "ale"  ), ( "ici", "ico" ), ( "nze", "nza" ), ( "ori", "ore" ),
-    (  "che", "ca"   ), ( "ati", "ato" ), ( "ari", "ario"), ( "tti", "tto" ),
-    (  "eri", "ero"  ), ( "chi", "co"  ), ( "ani", "ano" ), ( "ure", "ura" ),
-    (  "ità", "ità"  ), ( "ivi", "ivo" ), ( "ini", "ino" ), ( "iti", "ito" ),
-    (  "emi", "ema"  ), ( "ili", "ile" ), ( "oli", "olo" ), ( "esi", "ese" ),
-    (  "ate", "ata"  ), ( "ssi", "sso" ), ( "rie", "ria" ), ( "ine", "ina" ),
-    (  "lli", "llo"  ), ( "ggi", "ggio"), ( "tri", "tro" ), ( "imi", "imo" )
+    ("tenti", "tente"), ("anti", "ante"), ("oni", "one"), ("nti", "nto"),
+    ("ali", "ale"), ("ici", "ico"), ("nze", "nza"), ("ori", "ore"),
+    ("che", "ca"), ("ati", "ato"), ("ari", "ario"), ("tti", "tto"),
+    ("eri", "ero"), ("chi", "co"), ("ani", "ano"), ("ure", "ura"),
+    ("ità", "ità"), ("ivi", "ivo"), ("ini", "ino"), ("iti", "ito"),
+    ("emi", "ema"), ("ili", "ile"), ("oli", "olo"), ("esi", "ese"),
+    ("ate", "ata"), ("ssi", "sso"), ("rie", "ria"), ("ine", "ina"),
+    ("lli", "llo"), ("ggi", "ggio"), ("tri", "tro"), ("imi", "imo")
 ]
 
 singular_irregular = dict((v, k) for k, v in plural_irregular.items())
@@ -271,24 +278,25 @@ def singularize(word, pos=NOUN, custom={}):
         return w[:-1] + "o"
     return w
 
+
 #### VERB CONJUGATION ##############################################################################
 # The verb table was trained on Wiktionary and contains the top 1,250 frequent verbs.
 
 verb_majority_vote = [
-    ("iresti", "ire" ), ("ireste", "ire" ), ("iremmo", "ire" ), ("irebbe", "ire" ),
-    ("iranno", "ire" ), ( "ssero", "re"  ), ( "ssimo", "re"  ), ( "ivate", "ire" ),
-    ( "ivamo", "ire" ), ( "irete", "ire" ), ( "iremo", "ire" ), ( "irono", "ire" ),
-    ( "scano", "re"  ), ( "hiamo", "are" ), ( "scono", "re"  ), ( "hiate", "are" ),
-    (  "vano", "re"  ), (  "vate", "re"  ), (  "vamo", "re"  ), (  "simo", "e"   ),
-    (  "rono", "re"  ), (  "isse", "ire" ), (  "isti", "ire" ), (  "tino", "tare"),
-    (  "tato", "tare"), (  "irai", "ire" ), (  "tavo", "tare"), (  "tavi", "tare"),
-    (  "tava", "tare"), (  "tate", "tare"), (  "iste", "ire" ), (  "irei", "ire" ),
-    (  "immo", "ire" ), (  "rerò", "rare"), (  "rerà", "rare"), (  "iavo", "iare"),
-    (  "iavi", "iare"), (  "iava", "iare"), (  "iato", "iare"), (  "iare", "iare"),
-    (  "hino", "are" ), (   "ssi", "re"  ), (   "sse", "re"  ), (   "ndo", "re"  ),
-    (   "irò", "ire" ), (   "tai", "tare"), (   "ite", "ire" ), (   "irà", "ire" ),
-    (   "sco", "re"  ), (   "sca", "re"  ), (   "iai", "iare"), (    "ii", "ire" ),
-    (    "hi", "are" )
+    ("iresti", "ire"), ("ireste", "ire"), ("iremmo", "ire"), ("irebbe", "ire"),
+    ("iranno", "ire"), ("ssero", "re"), ("ssimo", "re"), ("ivate", "ire"),
+    ("ivamo", "ire"), ("irete", "ire"), ("iremo", "ire"), ("irono", "ire"),
+    ("scano", "re"), ("hiamo", "are"), ("scono", "re"), ("hiate", "are"),
+    ("vano", "re"), ("vate", "re"), ("vamo", "re"), ("simo", "e"),
+    ("rono", "re"), ("isse", "ire"), ("isti", "ire"), ("tino", "tare"),
+    ("tato", "tare"), ("irai", "ire"), ("tavo", "tare"), ("tavi", "tare"),
+    ("tava", "tare"), ("tate", "tare"), ("iste", "ire"), ("irei", "ire"),
+    ("immo", "ire"), ("rerò", "rare"), ("rerà", "rare"), ("iavo", "iare"),
+    ("iavi", "iare"), ("iava", "iare"), ("iato", "iare"), ("iare", "iare"),
+    ("hino", "are"), ("ssi", "re"), ("sse", "re"), ("ndo", "re"),
+    ("irò", "ire"), ("tai", "tare"), ("ite", "ire"), ("irà", "ire"),
+    ("sco", "re"), ("sca", "re"), ("iai", "iare"), ("ii", "ire"),
+    ("hi", "are")
 ]
 
 
@@ -296,18 +304,18 @@ class Verbs(_Verbs):
 
     def __init__(self):
         _Verbs.__init__(self, os.path.join(MODULE, "it-verbs.txt"),
-            language = "it",
-             default = {},
-              format = [
-                0, 1, 2, 3, 4, 5, 6, 8,     # indicativo presente
-                34, 35, 36, 37, 38, 39, 24, # indicativo passato remoto
-                17, 18, 19, 20, 21, 22,     # indicativo imperfetto
-                40, 41, 42, 43, 44, 45,     # indicativo futuro semplice
-                46, 47, 48, 49, 50, 51,     # condizionale presente
-                    52, 521, 53, 54, 541,    # imperativo
-                55, 56, 57, 58, 59, 60,     # congiuntivo presente
-                67, 68, 69, 70, 71, 72      # congiontive imperfetto
-            ])
+                        language="it",
+                        default={},
+                        format=[
+                            0, 1, 2, 3, 4, 5, 6, 8,  # indicativo presente
+                            34, 35, 36, 37, 38, 39, 24,  # indicativo passato remoto
+                            17, 18, 19, 20, 21, 22,  # indicativo imperfetto
+                            40, 41, 42, 43, 44, 45,  # indicativo futuro semplice
+                            46, 47, 48, 49, 50, 51,  # condizionale presente
+                            52, 521, 53, 54, 541,  # imperativo
+                            55, 56, 57, 58, 59, 60,  # congiuntivo presente
+                            67, 68, 69, 70, 71, 72  # congiontive imperfetto
+                        ])
 
     def find_lemma(self, verb):
         """ Returns the base form of the given inflected verb, using a rule-based approach.
@@ -328,32 +336,32 @@ class Verbs(_Verbs):
         v = v.replace("gge", "ggie")
         # Many verbs end in -ire and have a regular inflection:
         for x in ((
-          "irò", "irai", "irà", "iremo", "irete", "iranno",           # future
-          "irei", "iresti", "irebbe", "iremmo", "ireste", "irebbero", # conditional
-          "ascano",                                                   # subjunctive I
-          "issi", "isse", "issimo", "iste", "issero",                 # subjunctive II
-          "ivo", "ivi", "iva", "ivamo", "ivate", "ivano",             # past imperfective
-          "isti", "immo", "iste", "irono", "ito",                     # past perfective
-          "isco", "isci", "isce", "ite", "iscono", "indo")):          # present
+                "irò", "irai", "irà", "iremo", "irete", "iranno",  # future
+                "irei", "iresti", "irebbe", "iremmo", "ireste", "irebbero",  # conditional
+                "ascano",  # subjunctive I
+                "issi", "isse", "issimo", "iste", "issero",  # subjunctive II
+                "ivo", "ivi", "iva", "ivamo", "ivate", "ivano",  # past imperfective
+                "isti", "immo", "iste", "irono", "ito",  # past perfective
+                "isco", "isci", "isce", "ite", "iscono", "indo")):  # present
             if v.endswith(x):
                 return v[:-len(x)] + "ire"
         # Many verbs end in -are and have a regular inflection:
         for x in ((
-          "erò", "erai", "erà", "eremo", "erete", "eranno",           # future
-          "erei", "eresti", "erebbe", "eremmo", "ereste", "erebbero", # conditional
-          "iamo", "iate", "ino",                                      # subjunctive I
-          "assi", "asse", "assimo", "aste", "assero",                 # subjunctive II
-          "avo", "avi", "ava", "avamo", "avate", "avano",             # past imperfective
-          "ai", "asti", "ò", "ammo", "aste", "arono", "ato",          # past perfective
-          "iamo", "ate", "ano", "ando")):                             # present
+                "erò", "erai", "erà", "eremo", "erete", "eranno",  # future
+                "erei", "eresti", "erebbe", "eremmo", "ereste", "erebbero",  # conditional
+                "iamo", "iate", "ino",  # subjunctive I
+                "assi", "asse", "assimo", "aste", "assero",  # subjunctive II
+                "avo", "avi", "ava", "avamo", "avate", "avano",  # past imperfective
+                "ai", "asti", "ò", "ammo", "aste", "arono", "ato",  # past perfective
+                "iamo", "ate", "ano", "ando")):  # present
             if v.endswith(x):
                 return v[:-len(x)] + "are"
         # Many verbs end in -ere and have a regular inflection:
         for x in ((
-          "essi", "esse", "essimo", "este", "essero",                 # subjunctive II
-          "evo", "evi", "eva", "evamo", "evate", "evano",             # past imperfective
-          "ei", "esti", "è", "emmo", "este", "erono", "eto",          # past perfective
-          "ete", "ono", "endo")):                                     # present
+                "essi", "esse", "essimo", "este", "essero",  # subjunctive II
+                "evo", "evi", "eva", "evamo", "evate", "evano",  # past imperfective
+                "ei", "esti", "è", "emmo", "este", "erono", "eto",  # past perfective
+                "ete", "ono", "endo")):  # present
             if v.endswith(x):
                 return v[:-len(x)] + "ere"
         if v.endswith("à"):
@@ -375,9 +383,9 @@ class Verbs(_Verbs):
         v = re.sub(r"rre$", "re", v)
         b = v[:-3]
         if verb.endswith(("care", "gare")):
-            b += "h"   # moltiplicare => tu moltiplichi
+            b += "h"  # moltiplicare => tu moltiplichi
         if verb.endswith(("ciare", "giare")):
-            b = b[:-1] # cominciare => tu cominci
+            b = b[:-1]  # cominciare => tu cominci
         if v.endswith("are"):
             # -are = 1st conjugation
             a1, a2, a3, a4, a5, a6, a7 = "a", "a", "ò", "a", "i", "e", "a"
@@ -396,17 +404,17 @@ class Verbs(_Verbs):
         else:
             isc = ""
         v = [verb.lower(),
-            b + isc + "o", b + isc + "i", b + isc + a7, b + "iamo", b + a1 + "te", b + isc + a2 + "no", b + a1 + "ndo",
-            b + a1 + "i", b + a1 + "sti", b + a3, b + a1 + "mmo", b + a1 + "ste", b + a1 + "rono", b + a1 + "to",
-            b + a1 + "vo", b + a1 + "vi", b + a1 + "va", b + a1 + "vamo", b + a1 + "vate", b + a1 + "vano",
-            b + a6 + "rò", b + a6 + "rai", b + a6 + "rà", b + a6 + "remo", b + a6 + "rete", b + a6 + "ranno",
-            b + a6 + "rei", b + a6 + "resti", b + a6 + "rebbe", b + a6 + "remmo", b + a6 + "reste", b + a6 + "rebbero",
-            b + isc + a4, b + isc + a5, b + "iamo", b + a1 + "te", b + isc + a5 + "no",
-            b + isc + a5, b + isc + a5, b + isc + a5, b + "iamo", b + "iate", b + isc + a5 + "no",
-            b + a1 + "ssi", b + a1 + "ssi", b + a1 + "sse", b + a1 + "ssimo", b + a1 + "ste", b + a1 + "ssero"
-        ]
+             b + isc + "o", b + isc + "i", b + isc + a7, b + "iamo", b + a1 + "te", b + isc + a2 + "no", b + a1 + "ndo",
+             b + a1 + "i", b + a1 + "sti", b + a3, b + a1 + "mmo", b + a1 + "ste", b + a1 + "rono", b + a1 + "to",
+             b + a1 + "vo", b + a1 + "vi", b + a1 + "va", b + a1 + "vamo", b + a1 + "vate", b + a1 + "vano",
+             b + a6 + "rò", b + a6 + "rai", b + a6 + "rà", b + a6 + "remo", b + a6 + "rete", b + a6 + "ranno",
+             b + a6 + "rei", b + a6 + "resti", b + a6 + "rebbe", b + a6 + "remmo", b + a6 + "reste", b + a6 + "rebbero",
+             b + isc + a4, b + isc + a5, b + "iamo", b + a1 + "te", b + isc + a5 + "no",
+             b + isc + a5, b + isc + a5, b + isc + a5, b + "iamo", b + "iate", b + isc + a5 + "no",
+             b + a1 + "ssi", b + a1 + "ssi", b + a1 + "sse", b + a1 + "ssimo", b + a1 + "ste", b + a1 + "ssero"
+             ]
         for i, x in enumerate(v):
-            x = x.replace("ii" , "i")
+            x = x.replace("ii", "i")
             x = x.replace("cha", "ca")
             x = x.replace("gha", "ga")
             x = x.replace("gga", "ggia")
@@ -414,6 +422,7 @@ class Verbs(_Verbs):
             x = x.replace("chò", "cò")
             v[i] = x
         return v
+
 
 verbs = Verbs()
 
@@ -423,17 +432,17 @@ conjugate, lemma, lexeme, tenses = \
 #### ATTRIBUTIVE & PREDICATIVE #####################################################################
 
 adjective_predicative = {
-       "bei": "bello",
-       "bel": "bello",
-     "bell'": "bello",
-     "begli": "bello",
-      "buon": "buono",
-     "buon'": "buona",
-      "gran": "grande",
+    "bei": "bello",
+    "bel": "bello",
+    "bell'": "bello",
+    "begli": "bello",
+    "buon": "buono",
+    "buon'": "buona",
+    "gran": "grande",
     "grand'": "grande",
     "grandi": "grande",
-       "san": "santo",
-     "sant'": "santa"
+    "san": "santo",
+    "sant'": "santa"
 }
 
 

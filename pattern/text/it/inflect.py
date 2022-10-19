@@ -67,6 +67,9 @@ MASCULINE, FEMININE, NEUTER, PLURAL = \
 # Word starts with z or s + consonant?
 zs = lambda w: w and (w[:1] == "z" or (w[:1] == "s" and not is_vowel(w[1:2])))
 
+DEFINITE_ARTICLES = ["il", "lo", "la", "i", "gli", "le"]
+INDEFINITE_ARTICLES = ["uno", "un", "una", "un'"]
+ARTICLES = DEFINITE_ARTICLES + INDEFINITE_ARTICLES
 
 def definite_article(word, gender=MALE):
     """ Returns the definite article for a given word.

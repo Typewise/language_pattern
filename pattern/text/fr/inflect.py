@@ -77,6 +77,8 @@ def pluralize(word, pos=NOUN, custom={}):
         return w + "es"
     if w.endswith(("s", "x")):
         return w
+    if w.endswith("ou"):
+        return w + "x"
     if w.endswith("al"):
         return w[:-2] + "aux"
     if w.endswith(("au", "eu")):

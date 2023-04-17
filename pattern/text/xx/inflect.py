@@ -56,36 +56,8 @@ MASCULINE, FEMININE, NEUTER, PLURAL = \
     MALE, FEMALE, NEUTRAL, PLURAL = \
         M, F, N, PL = "m", "f", "n", "p"
 
-
-def definite_article(word):
-    """ Returns the definite article for a given word.
-    """
-    return "the"
-
-
-def indefinite_article(word):
-    """ Returns the indefinite article for a given word.
-    """
-    return "a"
-
-DEFINITE, INDEFINITE = \
-    "definite", "indefinite"
-
-
-def article(word, function=INDEFINITE):
-    """ Returns the indefinite or definite article for the given word.
-    """
-    return function == DEFINITE \
-       and definite_article(word) \
-        or indefinite_article(word)
-
-_article = article
-
-
-def referenced(word, article=INDEFINITE):
-    """ Returns a string with the article + the word.
-    """
-    return "%s %s" % (_article(word, article), word)
+DEFINITE_ARTICLES = []
+INDEFINITE_ARTICLES = []
 
 #### PLURALIZE ######################################################################################
 

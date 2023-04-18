@@ -2762,7 +2762,7 @@ class Spelling(lazydict):
 # print(parse("The cat sat on the mat.", language="en"))
 # print(parse("De kat zat op de mat.", language="nl"))
 
-LANGUAGES = ["en", "es", "de", "fr", "it", "nl"]
+LANGUAGES = ["en", "es", "de", "fr", "it", "nl", "pt"]
 
 _modules = {}
 

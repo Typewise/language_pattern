@@ -63,35 +63,43 @@ DEFINITE_ARTICLES = ["o", "a", "os", "as"]
 INDEFINITE_ARTICLES = ["um", "uma", "uns", "umas"]
 
 plural_irregular = {
-    "água": "águas",
     "alazão": "alazões",
     "alemão": "alemães",
     "álcool": "álcoois",
-    "animal": "animais",
-    "após": "após",
-    "arroz": "arroz",
+    "aldeão": "aldeãos",
+    "anão": "anões",
+    "ás": "ases",
     "atlas": "atlas",
     "avião": "aviões",
-    "bebê": "bebês",
-    "bife": "bifes",
+    "balcão": "balcões",
     "cão": "cães",
+    "capelão": "capelães",
     "capitão": "capitães",
+    "capitã": "capitãs",
     "caráter": "caracteres",
-    "cartaz": "cartazes",
-    "chapéu": "chapéus",
-    "chave": "chaves",
+    "cartão": "cartões",
+    "cidadão": "cidadãos",
     "cônsul": "cônsules",
-    "dó": "dólares",
+    "cristão": "cristãos",
+    "dor": "dores",
     "escrivão": "escrivães",
     "fácil": "fáceis",
     "feijão": "feijões",
+    "frágil": "frágeis",
     "gás": "gases",
+    "gel": "géis",
     "grão": "grãos",
-    "hífen": "hifens",
+    "guardião": "guardiães",
+    "hífen": "hífenes",
+    "homem": "homens",
+    "incrível": "incríveis",
     "irmão": "irmãos",
-    "jardim": "jardins",
+    "irmã": "irmãs",
+    "júnior": "juniores",
     "lã": "lãs",
     "lápis": "lápis",
+    "leão": "leões",
+    "mãe": "mães",
     "mal": "males",
     "mão": "mãos",
     "mel": "meles",
@@ -99,27 +107,35 @@ plural_irregular = {
     "mulher": "mulheres",
     "nariz": "narizes",
     "olho": "olhos",
-    "ovo": "ovos",
+    "ônibus": "ônibus",
     "pão": "pães",
     "papagaio": "papagaios",
+    "patrão": "patrões",
     "pé": "pés",
     "peixe": "peixes",
     "pincel": "pincéis",
-    "porco": "porcos",
     "projétil": "projéteis",
+    "raiz": "raízes",
     "rato": "ratos",
     "réptil": "répteis",
-    "rol": "roles",
+    "rol": "róis",
     "sabão": "sabões",
     "sangue": "sangues",
     "sede": "sedes",
+    "sênior": "seniores",
     "sofá": "sofás",
     "tênis": "tênis",
     "trem": "trens",
     "véu": "véus",
+    "vírus": "vírus",
     "voo": "voos"
 }
 singular_irregular = dict((v, k) for k, v in plural_irregular.items())
+
+
+def contains_accent(word):
+    """Returns True if the given word contains an accentuated character."""
+    return bool(re.search(r"[áéíóúâêîôûàèìòù]", word))
 
 
 def pluralize(word, pos=NOUN, custom={}):
@@ -131,15 +147,26 @@ def pluralize(word, pos=NOUN, custom={}):
     if word in plural_irregular:
         return plural_irregular[word]
     if word.endswith("ão"):
-        return word[:-2] + "ões"
+        return word[:-2] + "ões"  # add exceptions to plural_irregular
+    elif word.endswith("x") or word.endswith("us"):
+        return word
+    elif word.endswith("el") and not contains_accent(word):  # stress is on last syllable, needs accent to stay there
+        return word[:-2] + "éis"
+    elif word.endswith("ol"):
+        return word[:-2] + "óis"
+    elif word.endswith("il"):
+        if contains_accent(word):
+            return word[:-2] + "eis"
+        else:
+            return word[:-2] + "is"
     elif word.endswith("l"):
-        return word + "s"
-    elif word.endswith("r") or word.endswith("z") or word.endswith("n"):
+        return word[:-1] + "is"
+    elif word.endswith("és") or word.endswith("ês"):
+        return word[:-2] + "eses"
+    elif word.endswith("r") or word.endswith("z") or word.endswith("s"):
         return word + "es"
     elif word.endswith("m"):
         return word[:-1] + "ns"
-    elif re.match(r"^(g|q)u", word):
-        return word + "s"
     else:
         return word + "s"
 
@@ -153,34 +180,81 @@ def singularize(word, pos=NOUN, custom={}):
     if word in singular_irregular:
         return singular_irregular[word]
 
-    if word.endswith("ões"):
+    if word.endswith("ões") or word.endswith("ães") or word.endswith("ãos"):
         return word[:-3] + "ão"
-    elif word.endswith("ais"):
-        return word[:-1]
+    elif word.endswith("x") or word.endswith("us"):
+        return word
     elif word.endswith("eis"):
-        return word[:-1]
+        if contains_accent(word):
+            return word[:-2] + "il"
+        else:
+            return word[:-2] + "el"
+    elif word.endswith("ais") or word.endswith("uis"):
+        return word[:-2] + "l"
+    elif word.endswith("éis"):
+        return word[:-3] + "el"
+    elif word.endswith("óis"):
+        return word[:-3] + "ol"
+    elif word.endswith("is"):
+        return word[:-1] + "l"
     elif word.endswith("res"):
         return word[:-2]
     elif word.endswith("ns"):
-        return word + "m"
-    elif re.match(r"^(g|q)ue", word):
-        return word[:-1]
+        return word[:-2] + "m"
     else:
         return word.rstrip("s")
 
 
 def inflect_adjective(adjective, gender, number):
     """Inflects an adjective for gender and number."""
+    # Handle irregular adjectives or exceptions
+    irregular_adjectives = {
+        'bom': {'MASCULINE': {'SG': 'bom', 'PL': 'bons'}, 'FEMININE': {'SG': 'boa', 'PL': 'boas'}},
+        'mau': {'MASCULINE': {'SG': 'mau', 'PL': 'maus'}, 'FEMININE': {'SG': 'má', 'PL': 'más'}},
+        'fácil': {'MASCULINE': {'SG': 'fácil', 'PL': 'fáceis'}, 'FEMININE': {'SG': 'fácil', 'PL': 'fáceis'}},
+        'difícil': {'MASCULINE': {'SG': 'difícil', 'PL': 'difíceis'}, 'FEMININE': {'SG': 'difícil', 'PL': 'difíceis'}},
+        'são': {'MASCULINE': {'SG': 'são', 'PL': 'sãos'}, 'FEMININE': {'SG': 'sã', 'PL': 'sãs'}},
+    }
+    if adjective in irregular_adjectives:
+        return irregular_adjectives[adjective][gender][number]
+
+    # Regular inflection patterns
     if gender == MASCULINE:
         if number == SG:
             return adjective
         else:
-            return adjective + "s"
+            # Special handling for -l, -m, -r, -s, -z endings
+            if adjective.endswith("il"):
+                return re.sub(r"il$", "is", adjective)
+            elif adjective.endswith("l"):
+                return re.sub(r"l$", "is", adjective)
+            elif adjective.endswith("m"):
+                return re.sub(r"m$", "ns", adjective)
+            elif adjective.endswith(("r", "z")):
+                return adjective + "es"
+            elif adjective.endswith("ês"):
+                return re.sub(r"ês$", "eses", adjective)  # Correctly handle -ês to -eses
+            return adjective if adjective.endswith("s") else adjective + "s"
     else:
         if number == SG:
-            return re.sub(r"o$", "a", adjective)
+            if adjective.endswith("o"):
+                return re.sub(r"o$", "a", adjective)
+            return adjective
         else:
-            return re.sub(r"o$", "as", adjective)
+            if adjective.endswith("o"):
+                return re.sub(r"o$", "as", adjective)
+            # Special handling for -l, -m, -r, -s, -z, -ês endings
+            if adjective.endswith("il"):
+                return re.sub(r"il$", "is", adjective)
+            elif adjective.endswith("l"):
+                return re.sub(r"l$", "is", adjective)
+            elif adjective.endswith("m"):
+                return re.sub(r"m$", "ns", adjective)
+            elif adjective.endswith(("r", "z")):
+                return adjective + "es"
+            elif adjective.endswith("ês"):
+                return re.sub(r"ês$", "eses", adjective)  # Correctly handle -ês to -eses
+            return adjective if adjective.endswith("s") else adjective + "s"
 
 
 #### VERB CONJUGATION ##############################################################################
@@ -193,27 +267,122 @@ class Verbs(_Verbs):
         _Verbs.__init__(self, os.path.join(MODULE, "pt-verbs.txt"),
                         language="pt",
                         # The order of tenses in the given file; see pattern.text.__init__.py => Verbs.
-                        format=[0, 1, 2, 3, 4, 5, 6, 34, 35, 36, 37, 38, 39, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-                                28, 40, 41, 42, 43, 44, 45, 52, 55, 57, 58, 59, 60, 46, 47, 48, 49, 50, 51, 33, 33, 33,
-                                33, 33, 33, 24, 24, 24, 24, 24, 24, 52, 52, 52, 52, 52, 52, 55, 55, 58, 54, 60, 55, 57,
-                                58, 59, 60, 8, 24],
+                        format=[
+                            0, 1, 2, 3, 4, 5, 6,
+                            34, 35, 36, 37, 38, 39,
+                            17, 18, 19, 20, 21, 22,
+                            40, 41, 42, 43, 44, 45,
+                            55, 56, 57, 58, 59, 60,
+                            67, 68, 69, 70, 71, 72,
+                            46, 47, 48, 49, 50, 51,
+                            52, 8, 24],
                         default={}
                         )
 
     def find_lemma(self, verb):
-        """ Returns the base form of the given inflected verb, using a rule-based approach.
-        """
-        if verb.endswith("ar"):
-            return verb[:-2]
-        elif verb.endswith("er") or verb.endswith("ir"):
-            return verb[:-2]
-        else:
-            return verb
+        """Returns the base form of the given inflected Portuguese verb."""
+        v = verb.lower()
+        # Handle common irregular verb forms directly.
+        irregular_verbs = {
+            'sou': 'ser', 'és': 'ser', 'é': 'ser', 'somos': 'ser', 'sois': 'ser', 'são': 'ser',
+            'estou': 'estar', 'estás': 'estar', 'está': 'estar', 'estamos': 'estar', 'estais': 'estar',
+            'estão': 'estar',
+            'fui': 'ser', 'foi': 'ser', 'fomos': 'ser', 'foram': 'ser',
+            'tenho': 'ter', 'tens': 'ter', 'tem': 'ter', 'temos': 'ter', 'tendes': 'ter', 'têm': 'ter',
+            'digo': 'dizer', 'diz': 'dizer', 'dizemos': 'dizer', 'dizeis': 'dizer', 'dizem': 'dizer',
+            'faço': 'fazer', 'faz': 'fazer', 'fazemos': 'fazer', 'fazeis': 'fazer', 'fazem': 'fazer',
+            'seja': 'ser', 'sejas': 'ser', 'sejamos': 'ser', 'sejam': 'ser',
+            'vou': 'ir', 'vais': 'ir', 'vai': 'ir', 'vamos': 'ir', 'ides': 'ir', 'vão': 'ir',
+            'venho': 'vir', 'vens': 'vir', 'vem': 'vir', 'vimos': 'vir', 'vindes': 'vir', 'vêm': 'vir',
+            'vejo': 'ver', 'vês': 'ver', 'vê': 'ver', 'vemos': 'ver', 'vedes': 'ver', 'veem': 'ver',
+            'dou': 'dar', 'dás': 'dar', 'dá': 'dar', 'damos': 'dar', 'dais': 'dar', 'dão': 'dar',
+            'sei': 'saber', 'sabes': 'saber', 'sabe': 'saber', 'sabemos': 'saber', 'sabeis': 'saber', 'sabem': 'saber',
+            'posso': 'poder', 'podes': 'poder', 'pode': 'poder', 'podemos': 'poder', 'podeis': 'poder',
+            'podem': 'poder',
+            'saio': 'sair', 'sais': 'sair', 'sai': 'sair', 'saímos': 'sair', 'saís': 'sair', 'saem': 'sair',
+            'trago': 'trazer', 'trazes': 'trazer', 'traz': 'trazer', 'trazemos': 'trazer', 'trazeis': 'trazer',
+            'trazem': 'trazer',
+            'caio': 'cair', 'cais': 'cair', 'cai': 'cair', 'caímos': 'cair', 'caís': 'cair', 'caem': 'cair',
+            'leio': 'ler', 'lês': 'ler', 'lê': 'ler', 'lemos': 'ler', 'ledes': 'ler', 'leem': 'ler',
+            # Add more irregular forms as needed.
+        }
+        if v in irregular_verbs:
+            return irregular_verbs[v]
+        # Regular verb endings handling.
+        if v.endswith(("ar", "er", "ir")):
+            return v
+        # Infinitive by removing common verb suffixes and applying the most probable infinitive ending.
+        suffixes = (
+            ("ava", "ar"), ("ia", "er"), ("iu", "ir"), ("eu", "er"),  # Imperfect and simple past
+            ("ando", "ar"), ("endo", "er"), ("indo", "ir"),  # Gerund
+            ("ado", "ar"), ("ido", ["er", "ir"]),  # Past participle
+            ("o", "ar"), ("e", "er"), ("e", "ir"),  # Present indicative
+            ("am", "ar"), ("em", ["er", "ir"]),  # Present indicative plural
+        )
+        for suffix, infinitive_ending in suffixes:
+            if v.endswith(suffix):
+                base = v[:-len(suffix)]
+                if isinstance(infinitive_ending, list):  # Choose between -er and -ir based on the verb stem.
+                    if base[-1] in "aeiou":
+                        return base + infinitive_ending[0]  # Prefer -er for vowel-ending stems.
+                    else:
+                        return base + infinitive_ending[1]  # Prefer -ir otherwise.
+                return base + infinitive_ending
+        # If no rule matched, return the verb as is (might be already in infinitive or an irregular form not covered).
+        return v
 
     def find_lexeme(self, verb):
-        """ For a regular verb (base form), returns the forms using a rule-based approach.
-        """
+        """Generates conjugated forms for a given Portuguese verb (regular or irregular)."""
+        # Expanded list of some common irregular verbs with a selection of their forms.
+        irregular_verbs = {
+            'ser': ['sou', 'és', 'é', 'somos', 'sois', 'são', 'fui', 'foste', 'foi', 'fomos', 'foram', 'era', 'eras',
+                    'éramos', 'eram', 'serei', 'serás', 'será', 'seremos', 'serão', 'seja', 'sejas', 'sejamos',
+                    'sejam'],
+            'ter': ['tenho', 'tens', 'tem', 'temos', 'têm', 'tive', 'tiveste', 'teve', 'tivemos', 'tiveram', 'tinha',
+                    'tinhas', 'tínhamos', 'tinham', 'terei', 'terás', 'terá', 'teremos', 'terão', 'tenha', 'tenhas',
+                    'tenhamos', 'tenham'],
+            'ir': ['vou', 'vais', 'vai', 'vamos', 'vão', 'fui', 'foste', 'foi', 'fomos', 'foram', 'ia', 'ias', 'íamos',
+                   'iam', 'irei', 'irás', 'irá', 'iremos', 'irão', 'vá', 'vás', 'vamos', 'vão'],
+            'vir': ['venho', 'vens', 'vem', 'vimos', 'vêm', 'vim', 'vieste', 'veio', 'viemos', 'vieram', 'vinha',
+                    'vinhas', 'vínhamos', 'vinham', 'virei', 'virás', 'virá', 'viremos', 'virão', 'venha', 'venhas',
+                    'venhamos', 'venham'],
+            'estar': ['estou', 'estás', 'está', 'estamos', 'estão', 'estive', 'estiveste', 'esteve', 'estivemos',
+                      'estiveram', 'estava', 'estavas', 'estávamos', 'estavam', 'estarei', 'estarás', 'estará',
+                      'estaremos', 'estarão', 'esteja', 'estejas', 'estejamos', 'estejam'],
+            'fazer': ['faço', 'fazes', 'faz', 'fazemos', 'fazem', 'fiz', 'fizeste', 'fez', 'fizemos', 'fizeram',
+                      'fazia', 'fazias', 'fazíamos', 'faziam', 'farei', 'farás', 'fará', 'faremos', 'farão', 'faça',
+                      'faças', 'façamos', 'façam'],
+            'dizer': ['digo', 'dizes', 'diz', 'dizemos', 'dizem', 'disse', 'disseste', 'disse', 'dissemos', 'disseram',
+                      'dizia', 'dizias', 'dizíamos', 'diziam', 'direi', 'dirás', 'dirá', 'diremos', 'dirão', 'diga',
+                      'digas', 'digamos', 'digam'],
+            'poder': ['posso', 'podes', 'pode', 'podemos', 'podeis', 'podem', 'pude', 'pudeste', 'pôde', 'pudemos',
+                      'puderam', 'podia', 'podias', 'podíamos', 'podiam', 'poderei', 'poderás', 'poderá', 'poderemos',
+                      'poderão', 'possa', 'possas', 'possamos', 'possam'],
+            'saber': ['sei', 'sabes', 'sabe', 'sabemos', 'sabeis', 'sabem', 'soube', 'soubeste', 'soube', 'soubemos',
+                      'souberam', 'sabia', 'sabias', 'sabíamos', 'sabiam', 'saberei', 'saberás', 'saberá', 'saberemos',
+                      'saberão', 'saiba', 'saibas', 'saibamos', 'saibam'],
+            'dar': ['dou', 'dás', 'dá', 'damos', 'dais', 'dão', 'dei', 'deste', 'deu', 'demos', 'deram', 'dava',
+                    'davas', 'dávamos', 'davam', 'darei', 'darás', 'dará', 'daremos', 'darão', 'dê', 'dês', 'dêmos',
+                    'deem'],
+            'ler': ['leio', 'lês', 'lê', 'lemos', 'leis', 'leem', 'li', 'leste', 'leu', 'lemos', 'leram', 'lia', 'lias',
+                    'líamos', 'liam', 'lerei', 'lerás', 'lerá', 'leremos', 'lerão', 'leia', 'leias', 'leiamos',
+                    'leiam'],
+            'ver': ['vejo', 'vês', 'vê', 'vemos', 'vedes', 'veem', 'vi', 'viste', 'viu', 'vimos', 'viram', 'via',
+                    'vias', 'víamos', 'viam', 'verei', 'verás', 'verá', 'veremos', 'verão', 'veja', 'vejas', 'vejamos',
+                    'vejam'],
+            # Add more irregular verbs as needed.
+        }
+
+        # Check if the verb is irregular and return its forms if found.
+        if verb in irregular_verbs:
+            return [verb] + irregular_verbs[verb]
+
+        # Check if the verb is regular or irregular.
+        if not verb.endswith(("ar", "er", "ir")):
+            raise ValueError("Verb must end in 'ar', 'er', or 'ir'.")
+
         root = verb[:-2]
+
         if verb.endswith("ar"):
             endings = ["o", "as", "a", "amos", "ais", "am",
                        "ei", "aste", "ou", "amos", "astes", "aram",
@@ -222,40 +391,29 @@ class Verbs(_Verbs):
                        "asse", "asses", "asse", "ássemos", "ásseis", "assem",
                        "e", "es", "e", "emos", "eis", "em",
                        "aria", "arias", "aria", "aríamos", "aríeis", "ariam",
-                       "eira", "eiras", "eira", "eiríamos", "eiríeis", "eiram",
                        "ando", "ado"]
         elif verb.endswith("er"):
-            endings = ['o', 'es', 'e', 'emos', 'eis', 'em',  # 1
-                       'i', 'este', 'eu', 'emos', 'estes', 'eram',  # 2
-                       'ia', 'ias', 'ia', 'íamos', 'íeis', 'iam',  # 3
-                       'era', 'eras', 'era', 'êramos', 'êreis', 'eram',  # 4
-                       'erei', 'erás', 'erá', 'eremos', 'ereis', 'erão',  # NO
-                       'a', 'as', 'a', 'amos', 'ais', 'am',  # 6
-                       'esse', 'esses', 'esse', 'êssemos', 'êsseis', 'essem',  # 5
-                       'er', 'eres', 'er', 'ermos', 'erdes', 'erem',
-                       'er', 'eres', 'er', 'ermos', 'erdes', 'erem',
-                       'eria', 'erias', 'eria', 'eríamos', 'eríeis', 'eriam',
-                       'e', 'a', 'amos', 'e', 'am',
-                       'as', 'a', 'amos', 'ais', 'am',
-                       'endo', 'ido']
+            endings = ["o", "es", "e", "emos", "eis", "em",
+                       "i", "este", "eu", "emos", "estes", "eram",
+                       "ia", "ias", "ia", "íamos", "íeis", "iam",
+                       "era", "eras", "era", "êramos", "êreis", "eram",
+                       "erei", "erás", "erá", "eremos", "ereis", "erão",
+                       "a", "as", "a", "amos", "ais", "am",
+                       "esse", "esses", "esse", "êssemos", "êsseis", "essem",
+                       "endo", "ido"]
+        else:  # verb.endswith("ir")
+            endings = ["o", "es", "e", "imos", "is", "em",
+                       "i", "iste", "iu", "imos", "istes", "iram",
+                       "ia", "ias", "ia", "íamos", "íeis", "iam",
+                       "ira", "iras", "ira", "íramos", "íreis", "iram",
+                       "irei", "irás", "irá", "iremos", "ireis", "irão",
+                       "a", "as", "a", "amos", "ais", "am",
+                       "isse", "isses", "isse", "íssemos", "ísseis", "issem",
+                       "indo", "ido"]
 
-        else:
-            # elif verb.endswith("ir"):
-            endings = ['o', 'es', 'e', 'imos', 'is', 'em',  # 1
-                       'i', 'iste', 'iu', 'imos', 'istes', 'iram',  # 2
-                       'ia', 'ias', 'ia', 'íamos', 'íeis', 'iam',  # 3
-                       'ira', 'iras', 'ira', 'íramos', 'íreis', 'iram',  # 4
-                       'irei', 'irás', 'irá', 'iremos', 'ireis', 'irão',  # NO
-                       'a', 'as', 'a', 'amos', 'ais', 'am',  # 6
-                       'esse', 'esses', 'esse', 'êssemos', 'êsseis', 'essem',  # 5
-                       'ir', 'ires', 'ir', 'irmos', 'irdes', 'irem',
-                       'ir', 'ires', 'ir', 'irmos', 'irdes', 'irem',
-                       'ia', 'ias', 'ia', 'iríamos', 'iríeis', 'iam',
-                       'e', 'a', 'amos', 'i', 'am',
-                       'as', 'a', 'amos', 'ais', 'am',
-                       'indo', 'ido']
+        forms = [root + e for e in endings]
 
-        return [root] + [root + e for e in endings]
+        return forms
 
 
 verbs = Verbs()

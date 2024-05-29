@@ -62,6 +62,42 @@ DEFINITE_ARTICLES = ["o", "a", "os", "as"]
 # Indefinite articles.
 INDEFINITE_ARTICLES = ["um", "uma", "uns", "umas"]
 
+
+def definite_article(word, gender=MALE):
+    """ Returns the definite article (o/a/os/as) for a given word.
+    """
+    if MASCULINE in gender:
+        return "os" if PLURAL in gender else "o"
+    return "as" if PLURAL in gender else "a"
+
+
+def indefinite_article(word, gender=MALE):
+    """ Returns the indefinite article (um/uma/uns/umas) for a given word.
+    """
+    if MASCULINE in gender:
+        return "uns" if PLURAL in gender else "um"
+    return "umas" if PLURAL in gender else "uma"
+
+
+DEFINITE = "definite"
+INDEFINITE = "indefinite"
+
+
+def article(word, function=INDEFINITE, gender=MALE):
+    """ Returns the indefinite (um) or definite (o) article for the given word.
+    """
+    return function == DEFINITE \
+       and definite_article(word, gender) \
+        or indefinite_article(word, gender)
+_article = article
+
+
+def referenced(word, article=INDEFINITE, gender=MALE):
+    """ Returns a string with the article + the word.
+    """
+    return "%s %s" % (_article(word, article, gender), word)
+
+
 plural_irregular = {
     "alazão": "alazões",
     "alemão": "alemães",
@@ -257,9 +293,90 @@ def inflect_adjective(adjective, gender, number):
             return adjective if adjective.endswith("s") else adjective + "s"
 
 
-#### VERB CONJUGATION ##############################################################################
-# The verb table was trained on CELEX and contains the top 2000 most frequent verbs.
+#### GENDER #########################################################################################
 
+def gender(word):
+    """Returns the gender for the given word, either:
+       MALE, FEMALE, (MALE, FEMALE), (MALE, PLURAL) or (FEMALE, PLURAL)."""
+
+    w = word.lower()
+
+    exceptions = {
+        'dor': FEMALE,
+        'flor': FEMALE,
+        'cor': FEMALE,
+        'mar': MALE,
+        'luz': FEMALE,
+        'paz': FEMALE,
+        'sol': MALE,
+        'mel': MALE,
+        'calor': MALE,
+        'mãe': FEMALE,
+        'pai': MALE,
+        'árvore': FEMALE,
+        'noite': FEMALE,
+        'fome': FEMALE,
+        'sede': FEMALE,
+        'voz': FEMALE,
+        'vez': FEMALE,
+        'foto': FEMALE,
+        'mão': FEMALE,
+        'lei': FEMALE,
+        'série': FEMALE,
+        'equipe': FEMALE,
+        'reunião': FEMALE,
+        'sistema': MALE,
+        'problema': MALE,
+        'análise': FEMALE,
+        'decisão': FEMALE,
+        'ação': FEMALE,
+        'dia': MALE,
+        'mapa': MALE,
+        'clima': MALE,
+        'planeta': MALE,
+        'tema': MALE,
+        'programa': MALE,
+        'idioma': MALE,
+        'paixão': FEMALE,
+        'questão': FEMALE,
+        'opinião': FEMALE,
+        'religião': FEMALE,
+        'reflexão': FEMALE,
+        'sugestão': FEMALE,
+        'transgressão': FEMALE,
+        'transmissão': FEMALE,
+        'união': FEMALE,
+        'versão': FEMALE,
+        'visão': FEMALE,
+    }
+
+    # Check for exceptions first
+    if w in exceptions:
+        return exceptions[w]
+
+    # Handling specific and common endings
+    if w.endswith(("a", "ade", "ção")):
+        return FEMALE
+    if w.endswith(("o", "ote", "or")):
+        return MALE
+    if w.endswith(("e", "l")):
+        return (MALE, FEMALE)
+    if w.endswith("ão"):
+        # Consider adding logic to handle exceptions or ambiguous cases
+        return MALE
+    if w.endswith("as"):
+        return (FEMALE, PLURAL)
+    if w.endswith("os"):
+        return (MALE, PLURAL)
+    if w.endswith("ões"):
+        # Return both possibilities for "ões" due to ambiguity
+        return (MALE, FEMALE, PLURAL)
+
+    # Default case for adjectives that apply to both genders
+    return (MALE, FEMALE)
+
+
+#### VERB CONJUGATION ##############################################################################
 
 class Verbs(_Verbs):
 
@@ -424,14 +541,52 @@ conjugate, lemma, lexeme, tenses = \
 
 #### ATTRIBUTIVE & PREDICATIVE #####################################################################
 
-
-def attributive(adjective):
-    """ For a predicative adjective, returns the attributive form.
-    """
-    return adjective
+def attributive(adjective, gender=MALE):
+    w = adjective.lower()
+    # normal => normais
+    if PLURAL in gender and w.endswith("l"):
+        return w[:-1] + "is"
+    if PLURAL in gender and w.endswith("ês"):
+        return w[:-2] + "eses"
+    if PLURAL in gender and w.endswith("m"):
+        return w[:-1] + "ns"
+    if PLURAL in gender and w.endswith("r", "z", "s"):
+        return w + "es"
+    if PLURAL in gender and w.endswith(("a", "e")):
+        return w + "s"
+    if w.endswith("o"):
+        if FEMININE in gender and PLURAL in gender:
+            return w[:-1] + "as"
+        if FEMININE in gender:
+            return w[:-1] + "a"
+        if PLURAL in gender:
+            return w + "s"
+    return w
 
 
 def predicative(adjective):
-    """ Returns the predicative adjective.
+    """ Returns the predicative adjective (lowercase).
+        In Portuguese, the attributive form is always used for descriptive adjectives:
+        "el chico alto" => masculine,
+        "la chica alta" => feminine.
+        The predicative is useful for lemmatization.
     """
-    return adjective
+    w = adjective.lower()
+    # histéricos => histérico
+    if w.endswith(("os", "as")):
+        w = w[:-1]
+    # histérico => histérico
+    if w.endswith("o"):
+        return w
+    # histérica => histérico
+    if w.endswith("a"):
+        return w[:-1] + "o"
+    # felizes => feliz, ingleses => inglês, interessantes => interessante
+    if w.endswith("es"):
+        if w.endswith("eses"):
+            return w[:-4] + "ês"
+        if w.endswith(("zes", "res")):
+            return w[:-2]
+        else:
+            return w[:-2] + "e"
+    return w

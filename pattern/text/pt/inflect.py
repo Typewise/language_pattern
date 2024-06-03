@@ -55,6 +55,7 @@ is_vowel = lambda ch: ch in VOWELS
 MASCULINE, FEMININE, NEUTER, PLURAL = \
     MALE, FEMALE, NEUTRAL, PLURAL = \
     M, F, N, PL = "m", "f", "n", "p"
+GENDER = ["m", "f", "n", "p"]
 
 # Definite articles.
 DEFINITE_ARTICLES = ["o", "a", "os", "as"]

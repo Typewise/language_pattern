@@ -403,7 +403,7 @@ class Verbs(_Verbs):
         # Handle common irregular verb forms directly.
         irregular_verbs = {
             'sou': 'ser', 'és': 'ser', 'é': 'ser', 'somos': 'ser', 'sois': 'ser', 'são': 'ser',
-            'estou': 'estar', 'estás': 'estar', 'está': 'estar', 'estamos': 'estar', 'estais': 'estar',
+            'estou': 'estar', 'estás': 'estar', 'está': 'estar', 'tá': 'estar', 'estamos': 'estar', 'estais': 'estar',
             'estão': 'estar',
             'fui': 'ser', 'foi': 'ser', 'fomos': 'ser', 'foram': 'ser',
             'tenho': 'ter', 'tens': 'ter', 'tem': 'ter', 'temos': 'ter', 'tendes': 'ter', 'têm': 'ter',
@@ -431,7 +431,7 @@ class Verbs(_Verbs):
             return v
         # Infinitive by removing common verb suffixes and applying the most probable infinitive ending.
         suffixes = (
-            ("ava", "ar"), ("ia", "er"), ("iu", "ir"), ("eu", "er"),  # Imperfect and simple past
+            ("ava", "ar"), ("ia", "er"), ("iu", "ir"), ("eu", "er"), ("ou", "ar"), # Imperfect and simple past
             ("ando", "ar"), ("endo", "er"), ("indo", "ir"),  # Gerund
             ("ado", "ar"), ("ido", ["er", "ir"]),  # Past participle
             ("o", "ar"), ("e", "er"), ("e", "ir"),  # Present indicative
@@ -488,6 +488,12 @@ class Verbs(_Verbs):
             'ver': ['vejo', 'vês', 'vê', 'vemos', 'vedes', 'veem', 'vi', 'viste', 'viu', 'vimos', 'viram', 'via',
                     'vias', 'víamos', 'viam', 'verei', 'verás', 'verá', 'veremos', 'verão', 'veja', 'vejas', 'vejamos',
                     'vejam'],
+            'pôr': ['ponho', 'pões', 'põe', 'pomos', 'pondes', 'põem', 'pus', 'puseste', 'pôs', 'pusemos', 'puseram',
+                    'punha', 'punhas', 'púnhamos', 'punham', 'porei', 'porás', 'porá', 'poremos', 'porão', 'ponha',
+                    'ponhas', 'ponhamos', 'ponham'],
+            'opor': ['oponho', 'opões', 'opõe', 'opomos', 'opondes', 'opõem', 'opûs', 'opuseste', 'opôs', 'opusemos',
+                     'opuseram', 'opunha', 'opunhas', 'opúnhamos', 'opunham', 'oporei', 'oporás', 'oporá', 'oporemos',
+                     'oporão', 'oponha', 'oponhas', 'oponhamos', 'oponham']
             # Add more irregular verbs as needed.
         }
 
